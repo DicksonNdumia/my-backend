@@ -3,51 +3,34 @@ import morgan from 'morgan';
 import {myLogger} from './middlewares/isLogged.js';
 import {requestTime} from './middlewares/requestTme.js'
 import {errorHandler} from './middlewares/error.handler.js'
+import pool from './config/db.config.js';
+import AuthRoutes from './routes/auth.routes.js'
 
 
 const app = express();
 const port = 3000;
 
+app.use(express.json());
 app.use(morgan('dev'));
-app.use(express(json));
+
 app.use(myLogger);
 app.use(requestTime)
+
+app.use('/api/v1/auth',AuthRoutes);
+
+
+
 app.use(errorHandler);
 
 
-app.get('/', (req,res)=> {
-    res.send('Hello World!')
-});
-app.get('/app',(req,res)=> {
-   
-     let reponseText = 'Hello World!<br>'
-    reponseText += `<small>Requested at: ${req.requestTime}</small>`
-    res.send(reponseText)
-})
-
-app.get('/api/users')
 
 
-app.get('/my/app',(req,res,next)=> {
-    try {
-         let reponseText = 'Hello World!<br>';
-    reponseText += `<small>Requested at: ${req.requestTime}</small>`;
 
-     if (!req.requestTime) {
-      throw new Error('Request time not found');
-    }
 
-    res.send(reponseText);
 
-        
-    } catch (err) {
-        next(err)
-        
-    }
-   
-
-});
-
+pool.connect()
+.then(()=> console.log('Db Connected'))
+.catch(err=> console.error('connection error',err))
 
 
 
