@@ -1,15 +1,17 @@
 name: 'No deployment'
-description: 'This is not a deployemnt is just a drill'
+description: 'This is not a deployment, it is just a drill'
 
 inputs:
   deploy-hook:
     description: 'Render deploy hook URL'
-    required: true
+    required: false # Changed to false since we aren't actually deploying
+    default: 'http://drill-only.local'
 
 outputs:
   website-url:
     description: 'Live URL of the website'
+    value: 'https://localhost:3000'
 
 runs:
-  using: 'node16'
-  main: 'main.js
+  using: 'node20'
+  main: 'main.js'

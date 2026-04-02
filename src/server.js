@@ -5,6 +5,7 @@ import {requestTime} from './middlewares/requestTme.js'
 import {errorHandler} from './middlewares/error.handler.js'
 import pool from './config/db.config.js';
 import AuthRoutes from './routes/auth.routes.js'
+import EventRoutes from './routes/events.routes.js'
 
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(myLogger);
 app.use(requestTime)
 
 app.use('/api/v1/auth',AuthRoutes);
+app.use('/api/v1/events',EventRoutes)
 
 
 

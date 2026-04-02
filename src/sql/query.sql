@@ -29,6 +29,7 @@ CREATE TABLE events (
     title VARCHAR(50) NOT NULL,
     location VARCHAR(50) NOT NULL,
     image_url TEXT NOT NULL,
+    image_public_id TEXT,
     date DATE NOT NULL,
     description TEXT NOT NULL,
     created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
@@ -59,6 +60,21 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- =========================
+--Bookings TABLE
+-- =========================
+CREATE TABLE bookings (
+     id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id) ON DELETE SET NULL
+     created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+
+);
+
+
+
+
 -- =========================
 -- INserting Into roles
 -- =========================
@@ -103,4 +119,3 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
 
-ALTER TABLE EVENTS ADD COLUMN image_url TEXT NOT NULL
