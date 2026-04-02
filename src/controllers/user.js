@@ -152,3 +152,63 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
+export const deleteUsers = async(req,res,next) => {
+  try {
+    const {id} = req.params;
+
+
+  const checkIfUserExist = await pool.query(`SELECT id FROM users WHERE id = $1`,[id]);
+  if(checkIfUserExist.rows.length === 0){
+    return res.status(400).json({
+      message: "User not found"
+    });
+  }
+
+  //if user is found continue
+  const deleteUser = await pool.query(`DELETE FROM  users WHERE id=$1 RETURNING id,role_id,name,email`,[id]);
+  const result = deleteUser.rows[0];
+
+ return res.status(200).json({
+    message: "User deleted Successfully",
+    user: result
+  });
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getUserById = async(req,res,next) => {
+  try {
+    const {id} = req.params;
+   
+
+
+  const checkIfUserExist = await pool.query(`SELECT id FROM users WHERE id = $1`,[id]);
+  if(checkIfUserExist.rows.length === 0){
+    return res.status(400).json({
+      message: "User not found"
+    });
+  }
+
+  //Bring back the user using the Id
+  const getUser = await pool.query(`SELECT * FROM users WHERE id=$1  `,[id]);
+  const result = getUser.rows[0]
+
+  res.status(200).json({
+    message: "Your User is here",
+    data: {
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      role: result.role_id,
+      age: result.age
+    }
+  })
+
+
+  } catch (error) {
+    next(error)
+  }
+
+}
+

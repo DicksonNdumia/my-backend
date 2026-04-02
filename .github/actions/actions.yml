@@ -1,0 +1,15 @@
+name: 'No deployment'
+description: 'This is not a deployemnt is just a drill'
+
+inputs:
+  deploy-hook:
+    description: 'Render deploy hook URL'
+    required: true
+
+outputs:
+  website-url:
+    description: 'Live URL of the website'
+
+runs:
+  using: 'node16'
+  main: 'main.js
