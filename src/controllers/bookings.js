@@ -1,5 +1,14 @@
 import pool from "../config/db.config.js";
 
+//This is what the Table looks like this is just the map
+// CREATE TABLE bookings (
+//      id SERIAL PRIMARY KEY,
+//     event_id INTEGER REFERENCES events(id) ON DELETE SET NULL
+//      created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+//     created_at TIMESTAMP DEFAULT NOW(),
+
+// );
+
 export const bookAnEvent = async (req, res, next) => {
   try {
     const { event_id } = req.params;
