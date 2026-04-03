@@ -8,20 +8,20 @@ The following are sample registered users you can use for testing authentication
 
 #### 📊 Summary
 
-* **Success:** true
-* **Total Users:** 5
+- **Success:** true
+- **Total Users:** 5
 
 ---
 
 #### 👥 User List
 
-| ID | Name      | Email                                                 |
-| -- | --------- | ----------------------------------------------------- |
-| 2  | admin     | [doe@example.com](doe@example.com)             |
-| 8  | moderator | [mmm@example.com](mmm@example.com)             |
-| 7  | moderator | [moderator@example.com](moderator@example.com) |
-| 10 | user      | [carlos@example.com](carlos@example.com)       |
-| 9  | user      | [bruno@example.com](bruno@example.com)         |
+| ID  | Name      | Email                                          |
+| --- | --------- | ---------------------------------------------- |
+| 2   | admin     | [doe@example.com](doe@example.com)             |
+| 8   | moderator | [mmm@example.com](mmm@example.com)             |
+| 7   | moderator | [moderator@example.com](moderator@example.com) |
+| 10  | user      | [carlos@example.com](carlos@example.com)       |
+| 9   | user      | [bruno@example.com](bruno@example.com)         |
 
 ---
 
@@ -45,20 +45,15 @@ The following are sample registered users you can use for testing authentication
 
 #### day 2 I created events an events controllers where the moderator can create, update, delete an event
 
-
 > **Note:** All requests that modify data (`POST`, `PUT`, `DELETE`) require a **Bearer access token** obtained after logging in.
 
 ---
 
 ## 🔹 Fetch All Events
 
-**Request:**  
-
-
-
+**Request:**
 
 > GET http://localhost:3000/api/v1/events
-
 
 **Response Example:**
 
@@ -135,3 +130,4 @@ The following are sample registered users you can use for testing authentication
 
 
 ###
+```

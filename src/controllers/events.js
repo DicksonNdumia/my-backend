@@ -1,15 +1,12 @@
-
-import cloudinary from '../config/cloudinaryConfig.js'
-import pool from '../config/db.config.js';
-import fs from 'fs';
-
-
+import cloudinary from "../config/cloudinaryConfig.js";
+import pool from "../config/db.config.js";
+import fs from "fs";
 
 export const createEvent = async (req, res, next) => {
   try {
     if (!req.user || req.user?.role_id !== 2) {
-  return res.status(401).json({ error: "Unauthorized" });
-}
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
     const created_by = req.user.id;
 
@@ -35,40 +32,36 @@ export const createEvent = async (req, res, next) => {
       `INSERT INTO events (title, location, image_url, date, description, created_by)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *;`,
-      [title, location, result.secure_url, date, description, created_by]
+      [title, location, result.secure_url, date, description, created_by],
     );
 
     res.status(201).json({
       message: "Event uploaded successfully",
       data: insertIntoEvents.rows[0],
     });
-
   } catch (error) {
     next(error);
   }
 };
-export const getEvents = async(req,res,next) => {
-    try {
-          
-        const result = await pool.query(`SELECT * FROM events`);
-        const resultData = result.rows;
-        
-        return res.status(200).json({
-            message: "The events are as follows",
-            resultData
-        });
+export const getEvents = async (req, res, next) => {
+  try {
+    const result = await pool.query(`SELECT * FROM events`);
+    const resultData = result.rows;
 
-        
-    } catch (error) {
-        next(error)
-    }
-}
+    return res.status(200).json({
+      message: "The events are as follows",
+      resultData,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const updateEvents = async (req, res, next) => {
-   
   try {
     const { id } = req.params;
-    if (!id) return res.status(400).json({ error: "Provide the id for the event" });
+    if (!id)
+      return res.status(400).json({ error: "Provide the id for the event" });
 
     // 1. Auth Check
     if (!req.user || req.user.role_id !== 2) {
@@ -84,7 +77,7 @@ export const updateEvents = async (req, res, next) => {
 
     // 3. Handle incoming data (Defaulting to existing if body is empty)
     const { title, location, date, description } = req.body;
-    
+
     let imageUrl = existingEvent.image_url;
     let imagePublicId = existingEvent.image_public_id;
 
@@ -92,7 +85,7 @@ export const updateEvents = async (req, res, next) => {
     if (req.file) {
       // Upload new image
       const imageResult = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Library"
+        folder: "Library",
       });
 
       // Delete old image from Cloudinary if it exists
@@ -122,33 +115,33 @@ export const updateEvents = async (req, res, next) => {
       RETURNING *`;
 
     const finalUpdate = await pool.query(updateQuery, [
-      title, 
-      location, 
-      date, 
-      description, 
-      imageUrl, 
-      imagePublicId, 
-      id
+      title,
+      location,
+      date,
+      description,
+      imageUrl,
+      imagePublicId,
+      id,
     ]);
 
     res.status(200).json({
       message: "Event updated Successfully",
-      data: finalUpdate.rows[0]
+      data: finalUpdate.rows[0],
     });
-
   } catch (error) {
     // If upload happened but DB failed, we should handle the temp file
     if (req.file && fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
+      fs.unlinkSync(req.file.path);
     }
     next(error);
   }
 };
 
-export const getEventsById = async(req,res,next)=> {
-    try {
-        const { id } = req.params;
-    if (!id) return res.status(400).json({ error: "Provide the id for the event" });
+export const getEventsById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id)
+      return res.status(400).json({ error: "Provide the id for the event" });
 
     const result = await pool.query(`SELECT * FROM events WHERE id = $1`, [id]);
     if (result.rows.length === 0) {
@@ -157,19 +150,19 @@ export const getEventsById = async(req,res,next)=> {
     const existingEvent = result.rows[0];
 
     res.status(200).json({
-        message: "The event by id is here",
-        data: existingEvent
+      message: "The event by id is here",
+      data: existingEvent,
     });
-    } catch (error) {
-        next(error)
-    }
+  } catch (error) {
+    next(error);
+  }
+};
 
-}
-
-export const deleteEventById = async(req,res,next)=> {
-    try {
-         const { id } = req.params;
-    if (!id) return res.status(400).json({ error: "Provide the id for the event" });
+export const deleteEventById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id)
+      return res.status(400).json({ error: "Provide the id for the event" });
 
     // 1. Auth Check
     if (!req.user || req.user.role_id !== 2) {
@@ -181,18 +174,17 @@ export const deleteEventById = async(req,res,next)=> {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    const deleteResults = await pool.query(`DELETE FROM events WHERE id=$1 RETURNING* `,[id])
-    const delivery = deleteResults.rows[0]
+    const deleteResults = await pool.query(
+      `DELETE FROM events WHERE id=$1 RETURNING* `,
+      [id],
+    );
+    const delivery = deleteResults.rows[0];
 
     res.status(200).json({
-        message: "If your were sure about that then successfully deleted",
-        delivery
-    })
-
-
-    } catch (error) {
-        next(error)
-        
-    }
-}
-
+      message: "If your were sure about that then successfully deleted",
+      delivery,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

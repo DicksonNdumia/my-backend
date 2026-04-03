@@ -119,3 +119,5 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
 
+---To prevent a person from making two booking on ine event
+ALTER TABLE bookings ADD CONSTRAINT unique_user_event UNIQUE (event_id, created_by);
