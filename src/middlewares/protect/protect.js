@@ -52,12 +52,23 @@ export const isUser = (req, res, next) => {
 };
 
 export const isUserOrModerator = (req, res, next) => {
-  if (req.user && req.user.role_id === 2 && 3) {
+  if ((req.user && req.user.role_id === 2) || 3) {
     next();
   } else {
     return res.status(403).json({
       success: false,
       message: "Access Denied",
+    });
+  }
+};
+
+export const isModeratorOrIsAdmin = (req, res, next) => {
+  if ((req.user && req.user.role_id === 1) || 2) {
+    next();
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: "Access Denied You are not an Admin or a moderator",
     });
   }
 };

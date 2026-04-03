@@ -2,6 +2,19 @@ import cloudinary from "../config/cloudinaryConfig.js";
 import pool from "../config/db.config.js";
 import fs from "fs";
 
+// CREATE TABLE events (
+//     id SERIAL PRIMARY KEY,
+//     title VARCHAR(50) NOT NULL,
+//     location VARCHAR(50) NOT NULL,
+//     image_url TEXT NOT NULL,
+//     image_public_id TEXT,
+//     date DATE NOT NULL,
+//     description TEXT NOT NULL,
+//     created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     updated_at TIMESTAMP DEFAULT NOW()
+// );
+
 export const createEvent = async (req, res, next) => {
   try {
     if (!req.user || req.user?.role_id !== 2) {

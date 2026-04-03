@@ -5,6 +5,17 @@ import {
   generateRefreshToken,
 } from "../utils/generateToken.js";
 
+// CREATE TABLE users (
+//     id SERIAL PRIMARY KEY,
+//     name VARCHAR(50) NOT NULL,
+//     email VARCHAR(50) UNIQUE NOT NULL,
+//     password VARCHAR(250) NOT NULL,
+//     role_id INTEGER REFERENCES roles(id),
+//     age INTEGER,
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     updated_at TIMESTAMP DEFAULT NOW()
+// );
+
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, role_id, age } = req.body;
