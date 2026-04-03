@@ -8,7 +8,7 @@ export const bookAnEvent = async (req, res, next) => {
     // check if the user has an account
     if (!req.user.id) {
       return res.status(400).json({
-        message: "Please login or register account!",
+        message: "Please login or register account! 🤷‍♀️🤷‍♀️🤷‍♀️",
       });
     }
 
@@ -19,14 +19,14 @@ export const bookAnEvent = async (req, res, next) => {
     );
     if (checkIfUserHasBooked.rows.length > 0) {
       return res.status(400).json({
-        message: "You can't book twice my friend",
+        message: "You can't book twice my friend 😂😂😂",
       });
     }
 
     //Validate the event id if it is inputed
     if (!event_id) {
       return res.status(400).json({
-        message: "Please input the id for the event",
+        message: "Please input the id for the event 🤷‍♀️🤷‍♀️🤷‍♀️",
       });
     }
 
@@ -37,7 +37,7 @@ export const bookAnEvent = async (req, res, next) => {
     ]);
     if (eventQuery.rows.length === 0) {
       return res.status(400).json({
-        message: "The event does not exist create another one",
+        message: "The event does not exist create another one 🤷‍♀️🤷‍♀️🤷‍♀️",
       });
     }
 
@@ -50,7 +50,7 @@ export const bookAnEvent = async (req, res, next) => {
     const result = insertQuery.rows[0];
 
     res.status(201).json({
-      message: "Booking of the event was successful see you there",
+      message: "Booking of the event was successful see you there 🎶🎶🎶🤞🤞",
       data: result,
     });
   } catch (error) {
