@@ -46,7 +46,7 @@ export const isUser = (req, res, next) => {
   } else {
     return res.status(403).json({
       success: false,
-      message: "Access Denied",
+      message: "Access Denied is only users who have this right",
     });
   }
 };
