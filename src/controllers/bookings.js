@@ -136,21 +136,30 @@ export const getAlleventsDetails = async (req, res, next) => {
 
     const checkQueryForEvents = await pool.query(
       `SELECT 
-        b.id AS booking_id, 
-        b.created_at AS booking_date, 
-        e.title AS event_title, 
-        e.image_url AS image,
-        e.location AS event_location, 
-        e.date AS event_date, 
-        u.name AS attendee_name, 
-        u.email AS attendee_email 
-      FROM bookings b 
-      JOIN events e ON b.event_id = e.id 
-      JOIN users u ON b.created_by = u.id 
+  b.id AS booking_id, 
+  b.created_at AS booking_date, 
+  e.title AS event_title, 
+  e.image_url AS image,
+  e.location AS event_location, 
+  e.date AS event_date, 
+
+  u.name AS attendee_name, 
+  
+
+  p.comment AS comment,
+  cu.name AS commenter_name
+  
+
+FROM bookings b 
+JOIN events e ON b.event_id = e.id
+JOIN users u ON b.created_by = u.id
+
+LEFT JOIN comments p ON p.event_id = e.id
+LEFT JOIN users cu ON p.created_by = cu.id; 
       `,
     );
 
-    const result = checkQueryForEvents.rows;
+    const result = checkQueryForEvents.rows[0];
 
     res.status(200).json({
       message: "Boom! Event details fetched successfully",

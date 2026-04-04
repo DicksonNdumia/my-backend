@@ -153,18 +153,68 @@ export const updateEvents = async (req, res, next) => {
 export const getEventsById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ error: "Provide the id for the event" });
 
-    const result = await pool.query(`SELECT * FROM events WHERE id = $1`, [id]);
+    if (!id) {
+      return res.status(400).json({ error: "Provide the id for the event" });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT 
+        e.id,
+        e.title,
+        e.description,
+        e.image_url,
+        e.location,
+        e.date,
+
+        c.id AS comment_id,
+        c.comment,
+        c.created_at AS comment_date,
+
+        u.name AS commenter_name,
+        u.email AS commenter_email
+
+      FROM events e
+      LEFT JOIN comments c ON c.event_id = e.id
+      LEFT JOIN users u ON c.created_by = u.id
+      WHERE e.id = $1
+      ORDER BY c.created_at DESC;
+      `,
+      [id],
+    );
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Event not found" });
     }
-    const existingEvent = result.rows[0];
+
+    const event = {
+      id: result.rows[0].id,
+      title: result.rows[0].title,
+      description: result.rows[0].description,
+      image_url: result.rows[0].image_url,
+      location: result.rows[0].location,
+      date: result.rows[0].date,
+      comments: [],
+    };
+
+    result.rows.forEach((row) => {
+      if (row.comment) {
+        event.comments.push({
+          id: row.comment_id,
+          comment: row.comment,
+          created_at: row.comment_date,
+          user: {
+            name: row.commenter_name,
+            email: row.commenter_email,
+          },
+        });
+      }
+    });
 
     res.status(200).json({
-      message: "The event by id is here",
-      data: existingEvent,
+      message: "Event with comments",
+      data: event,
     });
   } catch (error) {
     next(error);
