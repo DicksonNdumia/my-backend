@@ -1,0 +1,3 @@
+#### This is an event backend sytem where the moderator can create an event and the users are able to book  the event there is no real payment yet 
+> but in future i will update to payment sytem
+> we have different roles e.g the Admin the moderator and the user.....................
