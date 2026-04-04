@@ -1,4 +1,4 @@
-### 🧪 Test Users for Login
+### Day 1🧪 Authenitication of Users Register And Login
 
 The following are sample registered users you can use for testing authentication.
 
@@ -41,15 +41,13 @@ The following are sample registered users you can use for testing authentication
 }
 ```
 
-### 🧪 Test Events for Login
-
 #### day 2 I created events an events controllers where the moderator can create, update, delete an event
 
 > **Note:** All requests that modify data (`POST`, `PUT`, `DELETE`) require a **Bearer access token** obtained after logging in.
 
 ---
 
-## 🔹 Fetch All Events
+### 🔹 Fetch All Events
 
 **Request:**
 
@@ -123,11 +121,54 @@ The following are sample registered users you can use for testing authentication
     }
   ]
 }
+```
 
+#### 🔹 Day 3 Created booking and also the ability of the user to book an event using the event_id
 
+Welcome
 
+> Also the moderator and the user can delete the bookings
+> the other thing is the ability for the user and moderator to get events with the booking details e.g who booked the event
+> **Request:**
 
+> GET http://localhost:3000/api/v1/bookings
 
+**Response Example:**
 
-###
+```json
+{
+  "message": "Boom! Event details fetched successfully",
+  "data": [
+    {
+      "booking_id": 1,
+      "booking_date": "2026-04-02T21:20:51.495Z",
+      "event_title": "Nyeri Falls Hiking Tour",
+      "image": "https://res.cloudinary.com/dqjqva9ca/image/upload/v1775125823/Library/bappacmpieyw4q0redlu.jpg",
+      "event_location": "Nyeri",
+      "event_date": "2026-04-27T21:00:00.000Z",
+      "attendee_name": "Carlos",
+      "attendee_email": "carlos@example.com"
+    },
+    {
+      "booking_id": 3,
+      "booking_date": "2026-04-02T22:27:28.452Z",
+      "event_title": "Canada",
+      "image": "https://res.cloudinary.com/dqjqva9ca/image/upload/v1775126784/Library/yvnwihwfvemlj3mnhcg5.jpg",
+      "event_location": "Canada",
+      "event_date": "2026-07-20T21:00:00.000Z",
+      "attendee_name": "Bruno",
+      "attendee_email": "bruno@example.com"
+    },
+    {
+      "booking_id": 4,
+      "booking_date": "2026-04-02T23:42:42.311Z",
+      "event_title": "The met Gala event",
+      "image": "https://res.cloudinary.com/dqjqva9ca/image/upload/v1775126610/Library/a6t7isvc29agd4ktdbtr.jpg",
+      "event_location": "Nanyuki",
+      "event_date": "2026-04-10T21:00:00.000Z",
+      "attendee_name": "Bruno",
+      "attendee_email": "bruno@example.com"
+    }
+  ]
+}
 ```
