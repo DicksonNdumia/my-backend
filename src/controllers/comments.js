@@ -122,11 +122,11 @@ export const editComment = async (req, res, next) => {
     }
 
     //check if you are the one who comments \
-    const validityOfComment = await pool.query(
+    const validity = await pool.query(
       `SELECT * FROM comments WHERE id=$1  AND created_by =$2`,
       [id, created_by],
     );
-    if (validityOfComment.rows.length === 0) {
+    if (validity.rows.length === 0) {
       return res.status(400).json({
         message: "Sorry You can't edit anyones comment",
       });
@@ -149,9 +149,9 @@ export const editComment = async (req, res, next) => {
 
     const result = updateQuery.rows;
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Comment updated successfully",
-      result,
+      data: result,
     });
   } catch (error) {
     next(error);

@@ -8,6 +8,7 @@ import AuthRoutes from "./routes/auth.routes.js";
 import EventRoutes from "./routes/events.routes.js";
 import BookEvents from "./routes/booking.routes.js";
 import CommentRoutes from "./routes/comment.routes.js";
+import ReviewRoutes from "./routes/review.routes.js";
 
 const app = express();
 const port = 3000;
@@ -20,6 +21,7 @@ app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/events", EventRoutes);
 app.use("/api/v1/bookings", BookEvents);
 app.use("/api/v1/comments", CommentRoutes);
+app.use("/api/v1/reviews", ReviewRoutes);
 
 app.use(errorHandler);
 

@@ -79,8 +79,7 @@ export const getEventAndBooking = async (req, res, next) => {
       });
     }
 
-    // 2. Check if THIS specific user has booked THIS specific event
-    // FIX: Added both event_id and user_id to the array
+    // 2. Check if THIS specific user has booked
     const checkIfUserHasBooked = await pool.query(
       `SELECT id FROM bookings WHERE event_id = $1 AND created_by = $2`,
       [event_id, user_id],
@@ -92,9 +91,6 @@ export const getEventAndBooking = async (req, res, next) => {
       });
     }
 
-    // 3. Fetch details
-    // FIX: Added a missing comma between attendee_name and u.email
-    // FIX: Added a WHERE clause so you only get the details for THIS booking
     const checkQueryForEvents = await pool.query(
       `SELECT 
         b.id AS booking_id, 
