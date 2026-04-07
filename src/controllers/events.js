@@ -73,12 +73,24 @@ export const getEvents = async (req, res, next) => {
 export const updateEvents = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const created_by = req.user.id;
     if (!id)
       return res.status(400).json({ error: "Provide the id for the event" });
 
     // 1. Auth Check
     if (!req.user || req.user.role_id !== 2) {
       return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    //check if you are the one who comments \
+    const validity = await pool.query(
+      `SELECT * FROM events WHERE id=$1 AND created_by =$2`,
+      [id, created_by],
+    );
+    if (validity.rows.length === 0) {
+      return res.status(400).json({
+        message: "Sorry You can't update anyones comment",
+      });
     }
 
     // 2. Fetch Existing
@@ -157,7 +169,6 @@ export const getEventsById = async (req, res, next) => {
     if (!id) {
       return res.status(400).json({ error: "Provide the id for the event" });
     }
-
     const result = await pool.query(
       `
       SELECT 
@@ -172,12 +183,21 @@ export const getEventsById = async (req, res, next) => {
         c.comment,
         c.created_at AS comment_date,
 
-        u.name AS commenter_name,
-        u.email AS commenter_email
+        u_comm.name AS commenter_name, 
+        u_comm.email AS commenter_email,
+
+        y.id AS review_id,
+         y.review,
+         u_rev.name AS reviewer_name,   
+        y.created_at AS review_date
+        
+        
 
       FROM events e
       LEFT JOIN comments c ON c.event_id = e.id
-      LEFT JOIN users u ON c.created_by = u.id
+      LEFT JOIN users u_comm ON c.created_by = u_comm.id
+      LEFT JOIN reviews y ON y.event_id = e.id
+      LEFT JOIN users u_rev ON y.created_by = u_rev.id
       WHERE e.id = $1
       ORDER BY c.created_at DESC;
       `,
@@ -196,6 +216,7 @@ export const getEventsById = async (req, res, next) => {
       location: result.rows[0].location,
       date: result.rows[0].date,
       comments: [],
+      reviews: [],
     };
 
     result.rows.forEach((row) => {
@@ -203,10 +224,25 @@ export const getEventsById = async (req, res, next) => {
         event.comments.push({
           id: row.comment_id,
           comment: row.comment,
+
           created_at: row.comment_date,
           user: {
             name: row.commenter_name,
             email: row.commenter_email,
+          },
+        });
+      }
+    });
+
+    result.rows.forEach((row) => {
+      if (row.review) {
+        event.reviews.push({
+          id: row.review_id,
+          review: row.review,
+
+          created_at: row.review_date,
+          user: {
+            name: row.reviewer_name,
           },
         });
       }
@@ -224,12 +260,23 @@ export const getEventsById = async (req, res, next) => {
 export const deleteEventById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const created_by = req.user;
     if (!id)
       return res.status(400).json({ error: "Provide the id for the event" });
 
-    // 1. Auth Check
     if (!req.user || req.user.role_id !== 2) {
       return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    //check if you are the one who events are you the one
+    const validity = await pool.query(
+      `SELECT * FROM events WHERE id=$1 AND created_by =$2`,
+      [id, created_by],
+    );
+    if (validity.rows.length === 0) {
+      return res.status(400).json({
+        message: "Sorry You can't delete anyones comment",
+      });
     }
 
     const result = await pool.query(`SELECT * FROM events WHERE id = $1`, [id]);

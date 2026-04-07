@@ -61,6 +61,7 @@ CREATE TABLE reviews (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+
 -- =========================
 --Bookings TABLE
 -- =========================

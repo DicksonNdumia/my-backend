@@ -223,3 +223,5 @@ export const getUserById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const resetPassword = async (req, res, next) => {};
