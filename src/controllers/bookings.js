@@ -1,4 +1,5 @@
 import pool from "../config/db.config.js";
+import { sendEmail } from "../middlewares/mail/mailer.js";
 
 //This is what the Table looks like this is just the map
 // CREATE TABLE bookings (
@@ -108,7 +109,9 @@ export const getEventAndBooking = async (req, res, next) => {
     );
 
     const result = checkQueryForEvents.rows[0];
+    // const event = checkQueryForEvents.rows[0];
 
+    // await sendEmail(req.user.email, event.title);
     res.status(200).json({
       message: "Boom! Event details fetched successfully",
       data: result,
