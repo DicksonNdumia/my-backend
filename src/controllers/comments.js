@@ -162,6 +162,12 @@ export const getMyComments = async (req, res, next) => {
   try {
     const created_by = req.user.id;
 
+    if (!created_by) {
+      return res.status.json({
+        message: "Not Authorized",
+      });
+    }
+
     const result = await pool.query(
       `
       SELECT 

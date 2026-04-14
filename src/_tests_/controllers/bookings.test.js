@@ -15,7 +15,7 @@ describe("Events Controller - getEventAndBooking", () => {
   beforeEach(() => {
     req = {
       params: { event_id: "10" },
-      user: { id: 1 },
+      user: { id: 1, email: "test@example.com" },
     };
     res = {
       status: jest.fn().mockReturnThis(),

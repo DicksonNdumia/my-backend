@@ -55,9 +55,21 @@ export const registerUser = async (req, res, next) => {
     const result = insertUser.rows[0];
     generateAccessToken(res, result.id, result.role_id);
 
+    const accessToken = generateAccessToken({
+      id: result.id,
+      role_id: result.role_id,
+    });
+
+    const refreshToken = generateRefreshToken({
+      id: result.id,
+      role_id: result.role_id,
+    });
+
     return res.status(201).json({
       message: "User created Successfully",
-      data: result,
+      accessToken,
+      refreshToken,
+      user: result,
     });
   } catch (error) {
     next(error);
@@ -91,7 +103,10 @@ export const loginUser = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const accessToken = generateAccessToken(user);
+    const accessToken = generateAccessToken({
+      id: user.id,
+      role_id: user.role_id,
+    });
     //console.log("Token being generated for:", user.id, "with role:", user.role_id);
     const refreshToken = generateRefreshToken(user);
 
@@ -113,23 +128,9 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
   try {
-    //We need immeadiately invalidate the access token and  the refresh token
-    /**make it ampty by using the "" Quotes*/
-    res.cookie("access_token", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "strict",
-      expires: new Date(0), //Expires immeaditely
+    return res.status(200).json({
+      message: "User logged out successfully",
     });
-
-    res.cookie("refresh_token", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "strict",
-      expires: new Date(0), // Expire immediately
-    });
-
-    res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     next(error);
   }
@@ -164,6 +165,21 @@ export const getAllUsers = async (req, res, next) => {
 export const deleteUsers = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const { role_id } = req.user.role_id;
+
+    if (!id) {
+      return res.status(400).json({
+        message: "missing Id",
+      });
+    }
+
+    const CheckIfIsAdmin = await pool.query(
+      "SELECT id FROM users WHERE role_id = $1",
+      [role_id],
+    );
+    if (CheckIfIsAdmin.rows.role_id === 1) {
+      return res.status(400).json({ message: "Unaothorized" });
+    }
 
     const checkIfUserExist = await pool.query(
       `SELECT id FROM users WHERE id = $1`,

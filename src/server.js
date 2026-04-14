@@ -1,7 +1,7 @@
 import express, { json } from "express";
-
+import chalk from "chalk";
 import { myLogger } from "./middlewares/isLogged.js";
-
+import cors from "cors";
 import { errorHandler } from "./middlewares/error.handler.js";
 import pool from "./config/db.config.js";
 import AuthRoutes from "./routes/auth.routes.js";
@@ -14,6 +14,20 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+const allowedOrigins = ["http://localhost:4200", "https://your-frontend.com"];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 app.use(myLogger);
 
@@ -27,9 +41,9 @@ app.use(errorHandler);
 
 pool
   .connect()
-  .then(() => console.log("Db Connected"))
-  .catch((err) => console.error("connection error", err));
+  .then(() => console.log(chalk.yellow("Db Connected")))
+  .catch((err) => console.error(chalk.red("connection error", err)));
 
 app.listen(port, () => {
-  console.log(`App listening on Port ${port}`);
+  console.log(chalk.yellow(`App listening on Port ${port}`));
 });
