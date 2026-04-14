@@ -172,3 +172,170 @@ Welcome
   ]
 }
 ```
+
+### Day 4 Created comments controller where the users are able to comment on an event before even booking
+
+> Just for pure vibes
+
+**Request:**
+
+> GET http://localhost:3000/api/v1/comments
+> also added a bit of protection
+
+**Response Example:**
+
+#####
+
+#### DAY 5 Created a review controller where the users ara able to add a review/ feedback after the event are over added date
+
+# validity that ensures reviews are always over before adding review also validation that checks if the user had booked the event to
+
+# give the correct feedback
+
+####
+
+### Completed the backend and now I will move to the frontend part
+
+**Packages installed:**
+
+> "@actions/core": "^1.11.1",
+> "@actions/exec": "^1.1.1",
+> "@sendgrid/mail": "^8.1.6",
+> "bcryptjs": "^3.0.3",
+> "chalk": "^5.6.2",
+> "cloudinary": "^2.9.0",
+> "cookie-parser": "^1.4.7",
+> "cors": "^2.8.6",
+> "cron": "^4.4.0",
+> "dotenv": "^17.3.1",
+> "express": "^5.2.1",
+> "jsonwebtoken": "^9.0.3",
+> "morgan": "^1.10.1",
+> "multer": "^2.1.1",
+> "nodemailer": "^8.0.4",
+> "nodemon": "^3.1.14",
+> "path": "^0.12.7",
+> "pg": "^8.20.0",
+> "supabase": "^2.84.5"
+> "jest": "^30.3.0",
+
+**Using npm install**
+
+**Also created .github workflows where the CI / CD runs the test, build of the app**
+
+name: Backend CI
+
+on:
+push:
+branches: [main]
+pull_request:
+branches: [main]
+
+jobs:
+build:
+runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Confirm success
+        run: echo "Pipeline completed successfully"
+
+**CI/CD automations**
+
+### Wrote some simple test although it was full AI that wrote some examples am
+
+### still trying to understand about testing of code
+
+### day seven of this project created a Dockerfile and a compose.yaml for creating the backend container and images
+
+# Set the base image to create the image for the backend
+
+> FROM node:20-alpine
+
+#create a user with permissions to run the app
+
+# -S -> create the user to a group
+
+# -G -> add the user to a group
+
+# this is done to avoid running the app as root
+
+# if the app is run as root, any vulneravility in the app can be exploited to gain
+
+# access to the host system
+
+# It's a good practice to run the app as a non-root user
+
+> RUN addgroup app && adduser -S -G app app
+
+# Set the user to run the app
+
+> USER app
+
+# Set the working directory to /app
+
+> WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+
+# This is done before copying the rest of the files to take advantage of Docker's cache
+
+# If the package.json and package-lock.json files haven't changed, Docker will used the
+
+# cached dependencies
+
+> COPY package\*.json ./
+
+# sometimes the ownership of the files in the working directory is changed to root
+
+# and thus the app can't access the files and throws an error -> EACCES: permission denied
+
+# to avoid this, change the ownership to the root user
+
+> USER root
+
+# change the ownership of the /app directory to the app user
+
+# chown -R <user>:<group> <directory>
+
+# chown command changes the user and/or group ownership of for given file.
+
+> RUN chown -R app:app .
+
+# change the user back to the app user
+
+> USER app
+
+#install the dependencies
+
+> RUN npm install
+
+# copy the rest of the files to the working directory
+
+> COPY . .
+
+#export poer 3000 to tell Docker that the container listens on the specified network port
+
+# at runtime
+
+> EXPOSE 3000
+
+###

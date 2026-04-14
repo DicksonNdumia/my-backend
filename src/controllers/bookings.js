@@ -1,5 +1,4 @@
 import pool from "../config/db.config.js";
-import { sendEmail } from "../middlewares/mail/mailer.js";
 
 //This is what the Table looks like this is just the map
 // CREATE TABLE bookings (
@@ -109,9 +108,6 @@ export const getEventAndBooking = async (req, res, next) => {
     );
 
     const result = checkQueryForEvents.rows[0];
-    // const event = checkQueryForEvents.rows[0];
-
-    // await sendEmail(req.user.email, event.title);
     res.status(200).json({
       message: "Boom! Event details fetched successfully",
       data: result,
@@ -133,36 +129,46 @@ export const getAlleventsDetails = async (req, res, next) => {
       });
     }
 
-    const checkQueryForEvents = await pool.query(
-      `SELECT 
-  b.id AS booking_id, 
-  b.created_at AS booking_date, 
-  e.title AS event_title, 
-  e.image_url AS image,
-  e.location AS event_location, 
-  e.date AS event_date, 
+    const result = await pool.query(
+      ` SELECT 
+        e.id,
+        e.title,
+        e.description,
+        e.image_url,
+        e.location,
+        e.date,
 
-  u.name AS attendee_name, 
-  
+        c.id AS comment_id,
+        c.comment,
+        c.created_at AS comment_date,
 
-  p.comment AS comment,
-  cu.name AS commenter_name
-  
+        u_comm.name AS commenter_name, 
+        u_comm.email AS commenter_email,
 
-FROM bookings b 
-JOIN events e ON b.event_id = e.id
-JOIN users u ON b.created_by = u.id
+        y.id AS review_id,
+         y.review,
+         u_rev.name AS reviewer_name,   
+        y.created_at AS review_date
+        
+        
 
-LEFT JOIN comments p ON p.event_id = e.id
-LEFT JOIN users cu ON p.created_by = cu.id; 
+      FROM events e
+      LEFT JOIN comments c ON c.event_id = e.id
+      LEFT JOIN users u_comm ON c.created_by = u_comm.id
+      LEFT JOIN reviews y ON y.event_id = e.id
+      LEFT JOIN users u_rev ON y.created_by = u_rev.id; 
       `,
     );
 
-    const result = checkQueryForEvents.rows[0];
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const event = result.rows;
 
     res.status(200).json({
       message: "Boom! Event details fetched successfully",
-      data: result,
+      data: event,
     });
   } catch (error) {
     next(error);
@@ -171,17 +177,30 @@ LEFT JOIN users cu ON p.created_by = cu.id;
 
 export const deleteBookings = async (req, res, next) => {
   try {
-    const { event_id } = req.params;
-    if (!event_id)
+    const { id } = req.params;
+    const created_by = req.user.id;
+
+    if (!id)
       return res.status(400).json({ error: "Provide the id for the booking!" });
 
-    // 1. Checking if is moderator a
-    if (!req.user || (req.user.role_id !== 2 && 3)) {
+    // 1. Checking if is moderator or a normal user
+    if (!req.user) {
       return res.status(401).json({ error: "Unauthorized You can't delete" });
     }
 
+    const checkIfOneIsTheOwner = await pool.query(
+      `SELECT * FROM bookings WHERE id=$1 AND created_by=$2`,
+      [id, created_by],
+    );
+
+    if (checkIfOneIsTheOwner.rows.length === 0) {
+      return res.status(400).json({
+        message: "Sorry the  event is missing!",
+      });
+    }
+
     const result = await pool.query(`SELECT * FROM bookings WHERE id = $1`, [
-      event_id,
+      id,
     ]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Booking  not found" });
@@ -189,13 +208,55 @@ export const deleteBookings = async (req, res, next) => {
 
     const deleteResults = await pool.query(
       `DELETE FROM bookings WHERE id=$1 RETURNING* `,
-      [event_id],
+      [id],
     );
     const delivery = deleteResults.rows[0];
 
     res.status(200).json({
       message: "If your were sure about that then successfully deleted",
       delivery,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWhatIBooked = async (req, res, next) => {
+  try {
+    const created_by = req.user?.id;
+
+    // 1. Check if the user is authenticated
+    if (!created_by) {
+      return res.status(401).json({
+        message: "No Token You must login",
+      });
+    }
+
+    //Querying the database
+    const checkQueryForBookings = await pool.query(
+      `SELECT 
+    c.id,
+    y.title AS event_title,
+    y.location AS event_location,
+    y.date AS event_date
+
+    FROM bookings c
+    LEFT JOIN events y ON y.id = c.event_id 
+    WHERE c.created_by=$1 ORDER BY c.created_at DESC `,
+      [created_by],
+    );
+    const result = checkQueryForBookings.rows;
+
+    if (checkQueryForBookings.rows.length === 0) {
+      return res.status(400).json({
+        message: "Sorry no booking was found Book an event",
+      });
+    }
+
+    //if there is
+    res.status(200).json({
+      message: "Here are your bookings",
+      data: result,
     });
   } catch (error) {
     next(error);

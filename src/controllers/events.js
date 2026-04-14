@@ -63,7 +63,7 @@ export const getEvents = async (req, res, next) => {
 
     return res.status(200).json({
       message: "The events are as follows",
-      resultData,
+      data: resultData,
     });
   } catch (error) {
     next(error);

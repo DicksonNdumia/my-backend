@@ -12,9 +12,11 @@ export const myLogger = (req, res, next) => {
         ? chalk.red
         : res.statusCode >= 400
           ? chalk.yellow
-          : res.statusCode >= 300
-            ? chalk.cyan
-            : chalk.green;
+          : res.statusCode >= 404
+            ? chalk.red
+            : res.statusCode >= 403
+              ? chalk.red
+              : chalk.green;
 
     // Method color
     const methodColor =
