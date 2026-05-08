@@ -44,7 +44,7 @@ export const createEvent = async (req, res, next) => {
     const insertIntoEvents = await pool.query(
       `INSERT INTO events (title, location, image_url, date, description, created_by)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *;`,
+       RETURNING *`,
       [title, location, result.secure_url, date, description, created_by],
     );
 
